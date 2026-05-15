@@ -3,7 +3,9 @@ package com.svenson95.track_e_backend.database.service;
 import com.svenson95.track_e_backend.database.dto.WorkoutDTO;
 import com.svenson95.track_e_backend.database.mapper.WorkoutMapper;
 import com.svenson95.track_e_backend.database.model.Workout;
+import com.svenson95.track_e_backend.database.model.Workout.ListItem;
 import com.svenson95.track_e_backend.database.repository.WorkoutRepository;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +14,10 @@ public class WorkoutService {
 
   private final WorkoutRepository workoutRepository;
   private final WorkoutMapper workoutMapper;
-  private final UserService userService;
 
-  public WorkoutService(
-      WorkoutRepository workoutRepository, WorkoutMapper workoutMapper, UserService userService) {
+  public WorkoutService(WorkoutRepository workoutRepository, WorkoutMapper workoutMapper) {
     this.workoutRepository = workoutRepository;
     this.workoutMapper = workoutMapper;
-    this.userService = userService;
   }
 
   public List<WorkoutDTO> findUserWorkouts(String userId) {
@@ -30,7 +29,6 @@ public class WorkoutService {
   public WorkoutDTO createWorkout(WorkoutDTO dto) {
     Workout workout = workoutMapper.toEntity(dto);
     Workout saved = workoutRepository.save(workout);
-    userService.addWorkoutIdToUserWorkouts(saved.getUserId(), saved.getWorkoutId());
     return workoutMapper.toDto(saved);
   }
 
@@ -55,13 +53,48 @@ public class WorkoutService {
     return workoutMapper.toDto(updatedWorkout);
   }
 
+  public List<WorkoutDTO> updateAllWorkouts(String userId, List<WorkoutDTO> workoutsDto) {
+
+    List<Workout> existingWorkouts =
+        workoutRepository
+            .findByUserId(userId)
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
+    List<Workout> updatedWorkouts = new ArrayList<>();
+
+    for (int i = 0; i < existingWorkouts.size(); i++) {
+      Workout existingWorkout = existingWorkouts.get(i);
+      WorkoutDTO dto = workoutsDto.get(i);
+
+      existingWorkout.setListId(dto.getListId());
+      existingWorkout.setName(dto.getName());
+
+      List<ListItem> items =
+          dto.getList().stream()
+              .map(
+                  itemDto -> {
+                    ListItem item = new ListItem();
+                    item.setName(itemDto.getName());
+                    item.setListId(itemDto.getListId());
+                    return item;
+                  })
+              .toList();
+
+      existingWorkout.setList(items);
+
+      updatedWorkouts.add(existingWorkout);
+    }
+
+    List<Workout> savedWorkouts = workoutRepository.saveAll(updatedWorkouts);
+
+    return workoutMapper.toDtoList(savedWorkouts);
+  }
+
   public boolean deleteById(String id) {
     return workoutRepository
         .findById(id)
         .map(
             workout -> {
               workoutRepository.deleteById(id);
-              userService.removeWorkoutFromList(workout.getUserId(), workout.getWorkoutId());
               return true;
             })
         .orElse(false);

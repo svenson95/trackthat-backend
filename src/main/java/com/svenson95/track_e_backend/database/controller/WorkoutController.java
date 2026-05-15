@@ -39,6 +39,12 @@ public class WorkoutController {
     return workoutService.changeWorkoutList(workout);
   }
 
+  @PostMapping("/update-all/{userId}")
+  public List<WorkoutDTO> updateAllWorkouts(
+      @PathVariable String userId, @RequestBody List<WorkoutDTO> workouts) {
+    return workoutService.updateAllWorkouts(userId, workouts);
+  }
+
   @DeleteMapping("/delete/{id}")
   public ResponseEntity<Void> deleteWorkout(@PathVariable String id) {
     boolean deleted = workoutService.deleteById(id);

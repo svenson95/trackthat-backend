@@ -1,7 +1,5 @@
 package com.svenson95.track_e_backend.database.dto;
 
-import java.util.List;
-
 public class UserDTO {
   private String id; // MongoDB doc id
   private String googleId;
@@ -10,7 +8,6 @@ public class UserDTO {
   private String email;
   private Number weight;
   private Number height;
-  private List<Long> workoutIds;
 
   public String getId() {
     return id;
@@ -66,13 +63,5 @@ public class UserDTO {
 
   public void setHeight(Number height) {
     this.height = height;
-  }
-
-  public List<Long> getWorkoutIds() {
-    return workoutIds;
-  }
-
-  public void setWorkoutIds(List<Long> workoutIds) {
-    this.workoutIds = workoutIds;
   }
 }

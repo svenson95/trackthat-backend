@@ -27,38 +27,4 @@ public class UserService {
     User saved = userRepository.save(user);
     return userMapper.toDto(saved);
   }
-
-  public UserDTO addWorkoutIdToUserWorkouts(String id, Long workoutId) {
-    User user = getUserOrThrowError(id);
-    List<Long> workoutIds = user.getWorkoutIds();
-    workoutIds.add(workoutId);
-    user.setWorkoutIds(workoutIds);
-    User saved = userRepository.save(user);
-    return userMapper.toDto(saved);
-  }
-
-  public UserDTO editUserWorkoutsSorting(String id, List<Long> workoutIds) {
-    User user = getUserOrThrowError(id);
-    user.setWorkoutIds(workoutIds);
-    User saved = userRepository.save(user);
-    return userMapper.toDto(saved);
-  }
-
-  public void removeWorkoutFromList(String userId, Long workoutId) {
-    User user = getUserOrThrowError(userId);
-    boolean removed = user.getWorkoutIds().remove(workoutId);
-
-    if (!removed) {
-      throw new RuntimeException(
-          "Workout with id " + workoutId + " not found in user's workout list");
-    }
-
-    userRepository.save(user);
-  }
-
-  private User getUserOrThrowError(String id) {
-    return userRepository
-        .findById(id)
-        .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-  }
 }

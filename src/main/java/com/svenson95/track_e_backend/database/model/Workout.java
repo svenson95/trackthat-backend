@@ -1,7 +1,6 @@
 package com.svenson95.track_e_backend.database.model;
 
 import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +10,7 @@ public class Workout {
 
   private String userId; // MongoDB doc id
   private Long workoutId;
+  private Long listId;
   private String lastUpdated; // UnixTimestring
   private String name;
   private List<ListItem> list;
@@ -18,9 +18,15 @@ public class Workout {
   public Workout() {}
 
   public Workout(
-      String userId, Long workoutId, String lastUpdated, String name, List<ListItem> list) {
+      String userId,
+      Long workoutId,
+      Long listId,
+      String lastUpdated,
+      String name,
+      List<ListItem> list) {
     this.userId = userId;
     this.workoutId = workoutId;
+    this.listId = listId;
     this.lastUpdated = lastUpdated;
     this.name = name;
     this.list = list;
@@ -44,6 +50,14 @@ public class Workout {
 
   public void setWorkoutId(Long workoutId) {
     this.workoutId = workoutId;
+  }
+
+  public Long getListId() {
+    return listId;
+  }
+
+  public void setListId(Long listId) {
+    this.listId = listId;
   }
 
   public String getLastUpdated() {
@@ -73,12 +87,14 @@ public class Workout {
   public static class ListItem {
     private String name;
     private ListItemType type;
+    private Long listId;
 
     public ListItem() {}
 
-    public ListItem(String name, ListItemType type) {
+    public ListItem(String name, ListItemType type, Long listId) {
       this.name = name;
       this.type = type;
+      this.listId = listId;
     }
 
     public String getName() {
@@ -96,6 +112,14 @@ public class Workout {
     public void setType(ListItemType type) {
       this.type = type;
     }
+
+    public Long getListId() {
+      return listId;
+    }
+
+    public void setListId(Long listId) {
+      this.listId = listId;
+    }
   }
 
   public static class ListItemExercise extends ListItem {
@@ -110,12 +134,13 @@ public class Workout {
     public ListItemExercise(
         String name,
         ListItemType type,
+        Long listId,
         ExerciseEquipment equipment,
         ExerciseVariant variant,
         String sets,
         String reps,
         String rest) {
-      super(name, type);
+      super(name, type, listId);
       this.equipment = equipment;
       this.variant = variant;
       this.sets = sets;

@@ -6,6 +6,7 @@ public class WorkoutDTO {
   private String id; // MongoDB doc id
   private String userId;
   private Long workoutId;
+  private Long listId;
   private String lastUpdated; // UnixTimestring
   private String name;
   private List<ListItemDTO> list;
@@ -32,6 +33,14 @@ public class WorkoutDTO {
 
   public void setWorkoutId(Long workoutId) {
     this.workoutId = workoutId;
+  }
+
+  public Long getListId() {
+    return listId;
+  }
+
+  public void setListId(Long listId) {
+    this.listId = listId;
   }
 
   public String getLastUpdated() {
@@ -61,6 +70,7 @@ public class WorkoutDTO {
   public static class ListItemDTO {
     private String name; // nullable
     private ListItemType type;
+    private Long listId;
 
     public String getName() {
       return name;
@@ -76,6 +86,14 @@ public class WorkoutDTO {
 
     public void setType(ListItemType type) {
       this.type = type;
+    }
+
+    public Long getListId() {
+      return listId;
+    }
+
+    public void setListId(Long listId) {
+      this.listId = listId;
     }
   }
 
