@@ -44,6 +44,17 @@ public class WorkoutService {
     return workoutMapper.toDto(updatedWorkout);
   }
 
+  public WorkoutDTO changeWorkoutList(WorkoutDTO dto) {
+    Workout workout =
+        workoutRepository
+            .findByWorkoutId(dto.getWorkoutId())
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
+    Workout newList = workoutMapper.toEntity(dto);
+    workout.setList(newList.getList());
+    Workout updatedWorkout = workoutRepository.save(workout);
+    return workoutMapper.toDto(updatedWorkout);
+  }
+
   public boolean deleteById(String id) {
     return workoutRepository
         .findById(id)
