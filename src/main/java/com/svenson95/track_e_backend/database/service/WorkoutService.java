@@ -68,19 +68,9 @@ public class WorkoutService {
       existingWorkout.setListId(dto.getListId());
       existingWorkout.setName(dto.getName());
 
-      List<ListItem> items =
-          dto.getList().stream()
-              .map(
-                  itemDto -> {
-                    ListItem item = new ListItem();
-                    item.setName(itemDto.getName());
-                    item.setListId(itemDto.getListId());
-                    return item;
-                  })
-              .toList();
+      List<ListItem> items = dto.getList().stream().map(ListItem::fromDto).toList();
 
       existingWorkout.setList(items);
-
       updatedWorkouts.add(existingWorkout);
     }
 

@@ -1,5 +1,6 @@
 package com.svenson95.track_e_backend.database.model;
 
+import com.svenson95.track_e_backend.database.dto.WorkoutDTO.ListItemDTO;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -87,13 +88,15 @@ public class Workout {
   public static class ListItem {
     private String name;
     private ListItemType type;
+    private Long itemId;
     private Long listId;
 
     public ListItem() {}
 
-    public ListItem(String name, ListItemType type, Long listId) {
+    public ListItem(String name, ListItemType type, Long itemId, Long listId) {
       this.name = name;
       this.type = type;
+      this.itemId = itemId;
       this.listId = listId;
     }
 
@@ -113,12 +116,32 @@ public class Workout {
       this.type = type;
     }
 
+    public Long getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+      this.itemId = itemId;
+    }
+
     public Long getListId() {
       return listId;
     }
 
     public void setListId(Long listId) {
       this.listId = listId;
+    }
+
+    public static ListItem fromDto(ListItemDTO dto) {
+
+      ListItem item = new ListItem();
+
+      item.setName(dto.getName());
+      item.setType(Workout.ListItemType.valueOf(dto.getType().name()));
+      item.setItemId(dto.getItemId());
+      item.setListId(dto.getListId());
+
+      return item;
     }
   }
 
@@ -135,12 +158,13 @@ public class Workout {
         String name,
         ListItemType type,
         Long listId,
+        Long itemId,
         ExerciseEquipment equipment,
         ExerciseVariant variant,
         String sets,
         String reps,
         String rest) {
-      super(name, type, listId);
+      super(name, type, listId, itemId);
       this.equipment = equipment;
       this.variant = variant;
       this.sets = sets;

@@ -70,6 +70,7 @@ public class WorkoutDTO {
   public static class ListItemDTO {
     private String name; // nullable
     private ListItemType type;
+    private Long itemId;
     private Long listId;
 
     public String getName() {
@@ -86,6 +87,14 @@ public class WorkoutDTO {
 
     public void setType(ListItemType type) {
       this.type = type;
+    }
+
+    public Long getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+      this.itemId = itemId;
     }
 
     public Long getListId() {
