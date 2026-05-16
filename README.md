@@ -32,6 +32,8 @@ mvnw.cmd spring-boot:run
 ```
 GOOGLE_CLIENT_ID=your-google-client-id
 JWT_SECRET=your-secret
+MONGODB_URI=mongodb-secret
+PORT=0000
 ```
 
 ## Versions

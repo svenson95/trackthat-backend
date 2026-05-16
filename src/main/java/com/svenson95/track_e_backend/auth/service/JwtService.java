@@ -12,16 +12,20 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
 
+  @Value("${JWT_SECRET}")
+  private String secret;
+
   private Key secretKey;
 
   @PostConstruct
   public void init() {
-    String secret = System.getenv("JWT_SECRET");
+
     if (secret == null || secret.isBlank()) {
       throw new IllegalStateException("JWT_SECRET environment variable not set!");
     }

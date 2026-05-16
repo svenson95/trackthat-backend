@@ -2,7 +2,6 @@ package com.svenson95.track_e_backend.auth.service;
 
 import com.svenson95.track_e_backend.database.model.User;
 import com.svenson95.track_e_backend.database.repository.UserRepository;
-import java.util.ArrayList;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ public class DatabaseService {
     newUser.setPicture((String) userInfo.get("picture"));
     newUser.setWeight(0);
     newUser.setHeight(0);
-    newUser.setWorkoutIds(new ArrayList<>());
     return userRepository.save(newUser);
   }
 }
