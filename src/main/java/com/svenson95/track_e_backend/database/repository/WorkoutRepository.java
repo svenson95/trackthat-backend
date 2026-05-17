@@ -10,5 +10,5 @@ public interface WorkoutRepository extends MongoRepository<Workout, String> {
 
   Optional<Workout> findByWorkoutId(Long workoutId);
 
-  boolean existsByName(String name);
+  boolean existsByUserIdAndName(String userId, String name);
 }

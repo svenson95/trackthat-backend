@@ -29,14 +29,14 @@ public class WorkoutService {
   }
 
   public WorkoutDTO createWorkout(WorkoutDTO dto) {
-    boolean alreadyExists = workoutRepository.existsByName(dto.getName());
-
-    if (alreadyExists) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Workout already exists");
+    if (workoutRepository.existsByUserIdAndName(dto.getUserId(), dto.getName())) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, "Workout already exists for this user");
     }
 
     Workout workout = workoutMapper.toEntity(dto);
     Workout saved = workoutRepository.save(workout);
+
     return workoutMapper.toDto(saved);
   }
 
