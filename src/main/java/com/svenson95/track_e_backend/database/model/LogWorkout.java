@@ -1,9 +1,11 @@
 package com.svenson95.track_e_backend.database.model;
 
-import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO.SetItemDTO;
 import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO.SetItemDTO;
 
 @Document(collection = "logs-workout")
 public class LogWorkout {
