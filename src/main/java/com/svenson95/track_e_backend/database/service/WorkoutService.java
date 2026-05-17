@@ -7,7 +7,9 @@ import com.svenson95.track_e_backend.database.model.Workout.ListItem;
 import com.svenson95.track_e_backend.database.repository.WorkoutRepository;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class WorkoutService {
@@ -27,6 +29,12 @@ public class WorkoutService {
   }
 
   public WorkoutDTO createWorkout(WorkoutDTO dto) {
+    boolean alreadyExists = workoutRepository.existsByName(dto.getName());
+
+    if (alreadyExists) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Workout already exists");
+    }
+
     Workout workout = workoutMapper.toEntity(dto);
     Workout saved = workoutRepository.save(workout);
     return workoutMapper.toDto(saved);
