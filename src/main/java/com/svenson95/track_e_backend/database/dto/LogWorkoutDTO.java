@@ -1,0 +1,100 @@
+package com.svenson95.track_e_backend.database.dto;
+
+import java.util.List;
+
+public class LogWorkoutDTO {
+  private String id; // MongoDB doc id
+  private String userId;
+  private Long logId;
+  private String date;
+
+  private List<SetItemDTO> sets;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  public Long getLogId() {
+    return logId;
+  }
+
+  public void setLogId(Long logId) {
+    this.logId = logId;
+  }
+
+  public String getDate() {
+    return date;
+  }
+
+  public void setDate(String date) {
+    this.date = date;
+  }
+
+  public List<SetItemDTO> getSets() {
+    return sets;
+  }
+
+  public void setSets(List<SetItemDTO> sets) {
+    this.sets = sets;
+  }
+
+  public static class SetItemDTO {
+    private String exercise;
+    private Long load;
+    private Long reps;
+    private Long itemId;
+    private String note;
+
+    public String getExercise() {
+      return exercise;
+    }
+
+    public void setExercise(String exercise) {
+      this.exercise = exercise;
+    }
+
+    public Long getLoad() {
+      return load;
+    }
+
+    public void setLoad(Long load) {
+      this.load = load;
+    }
+
+    public Long getReps() {
+      return reps;
+    }
+
+    public void setReps(Long reps) {
+      this.reps = reps;
+    }
+
+    public Long getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+      this.itemId = itemId;
+    }
+
+    public String getNote() {
+      return note;
+    }
+
+    public void setNote(String note) {
+      this.note = note;
+    }
+  }
+}
