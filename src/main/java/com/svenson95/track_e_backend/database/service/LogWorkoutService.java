@@ -39,7 +39,7 @@ public class LogWorkoutService {
                 })
             .findFirst();
 
-    if (existing.isPresent()) {
+    if (existing.isEmpty()) {
       return ResponseEntity.ok("No log found for date: " + date);
     }
 
