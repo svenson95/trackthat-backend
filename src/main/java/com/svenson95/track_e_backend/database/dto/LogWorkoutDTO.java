@@ -55,6 +55,7 @@ public class LogWorkoutDTO {
     private Long load;
     private Long reps;
     private Long itemId;
+    private String time;
     private String note;
 
     public String getExercise() {
@@ -87,6 +88,14 @@ public class LogWorkoutDTO {
 
     public void setItemId(Long itemId) {
       this.itemId = itemId;
+    }
+
+    public String getTime() {
+      return time;
+    }
+
+    public void setTime(String time) {
+      this.time = time;
     }
 
     public String getNote() {

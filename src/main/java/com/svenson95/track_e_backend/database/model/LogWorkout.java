@@ -1,11 +1,9 @@
 package com.svenson95.track_e_backend.database.model;
 
+import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO.SetItemDTO;
 import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO.SetItemDTO;
 
 @Document(collection = "logs-workout")
 public class LogWorkout {
@@ -66,15 +64,17 @@ public class LogWorkout {
     private Long load;
     private Long reps;
     private Long itemId;
+    private String time;
     private String note;
 
     public SetItem() {}
 
-    public SetItem(String exercise, Long load, Long reps, Long itemId, String note) {
+    public SetItem(String exercise, Long load, Long reps, Long itemId, String time, String note) {
       this.exercise = exercise;
       this.load = load;
       this.reps = reps;
       this.itemId = itemId;
+      this.time = time;
       this.note = note;
     }
 
@@ -110,6 +110,14 @@ public class LogWorkout {
       this.itemId = itemId;
     }
 
+    public String getTime() {
+      return time;
+    }
+
+    public void setTime(String time) {
+      this.time = time;
+    }
+
     public String getNote() {
       return note;
     }
@@ -126,6 +134,7 @@ public class LogWorkout {
       item.setLoad(dto.getLoad());
       item.setReps(dto.getReps());
       item.setItemId(dto.getItemId());
+      item.setTime(dto.getTime());
       item.setNote(dto.getNote());
 
       return item;
