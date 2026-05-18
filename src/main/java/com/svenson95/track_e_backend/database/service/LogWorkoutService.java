@@ -129,13 +129,17 @@ public class LogWorkoutService {
     return logWorkoutMapper.toDto(saved);
   }
 
-  public ResponseEntity<?> deleteSetInLog(String logId, String setIndex) {
+  public ResponseEntity<?> deleteSetInLog(String logId, String itemId) {
     LogWorkout log =
         logWorkoutRepository
             .findByLogId(Long.valueOf(logId))
             .orElseThrow(() -> new RuntimeException("Log not found"));
-    int index = Integer.parseInt(setIndex);
-    log.getSets().remove(index);
+    long parsedItemId = Long.parseLong(itemId);
+    boolean removed = log.getSets().removeIf(set -> set.getItemId() == parsedItemId);
+
+    if (!removed) {
+      return ResponseEntity.notFound().build();
+    }
 
     if (log.getSets().isEmpty()) {
       logWorkoutRepository.delete(log);

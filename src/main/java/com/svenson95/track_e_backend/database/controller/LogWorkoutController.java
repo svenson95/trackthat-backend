@@ -45,9 +45,8 @@ public class LogWorkoutController {
     return logWorkoutService.updateSetInLog(logId, setIndex, setDto);
   }
 
-  @DeleteMapping("/delete/{logId}/{setIndex}")
-  public ResponseEntity<?> deleteSetInLog(
-      @PathVariable String logId, @PathVariable String setIndex) {
-    return logWorkoutService.deleteSetInLog(logId, setIndex);
+  @DeleteMapping("/delete/{logId}/{itemId}")
+  public ResponseEntity<?> deleteSetInLog(@PathVariable String logId, @PathVariable String itemId) {
+    return logWorkoutService.deleteSetInLog(logId, itemId);
   }
 }
