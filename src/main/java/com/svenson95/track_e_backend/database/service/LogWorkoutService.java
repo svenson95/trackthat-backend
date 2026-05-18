@@ -52,7 +52,7 @@ public class LogWorkoutService {
 
   public LogWorkoutDTO findLatestLogForExercise(String exercise) {
     return logWorkoutRepository
-        .findLatestSetsByExercise(exercise)
+        .findTopBySetsExerciseOrderByDateDesc(exercise)
         .map(
             log -> {
               List<LogWorkoutDTO.SetItemDTO> filteredSets =
