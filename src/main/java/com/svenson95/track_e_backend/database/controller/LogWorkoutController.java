@@ -20,7 +20,7 @@ public class LogWorkoutController {
   @Autowired private LogWorkoutService logWorkoutService;
 
   @GetMapping("/get/{date}")
-  public LogWorkoutDTO getLogWorkouts(@PathVariable String date) {
+  public ResponseEntity<?> getLogWorkouts(@PathVariable String date) {
     return logWorkoutService.findLogWorkout(date);
   }
 

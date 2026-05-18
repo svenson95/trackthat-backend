@@ -25,7 +25,7 @@ public class LogWorkoutService {
     this.logWorkoutMapper = logWorkoutMapper;
   }
 
-  public LogWorkoutDTO findLogWorkout(String date) {
+  public ResponseEntity<?> findLogWorkout(String date) {
     Instant instant = Instant.ofEpochMilli(Long.parseLong(date));
     LocalDate targetDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -40,14 +40,10 @@ public class LogWorkoutService {
             .findFirst();
 
     if (existing.isPresent()) {
-      return logWorkoutMapper.toDto(existing.get());
+      return ResponseEntity.ok("No log found for date: " + date);
     }
 
-    LogWorkout newLog = new LogWorkout();
-    newLog.setDate(date);
-    LogWorkout saved = logWorkoutRepository.save(newLog);
-
-    return logWorkoutMapper.toDto(saved);
+    return ResponseEntity.ok(logWorkoutMapper.toDto(existing.get()));
   }
 
   public LogWorkoutDTO findLatestLogForExercise(String exercise) {
