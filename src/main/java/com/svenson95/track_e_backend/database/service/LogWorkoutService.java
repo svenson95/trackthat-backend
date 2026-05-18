@@ -7,6 +7,7 @@ import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,12 @@ public class LogWorkoutService {
             .findFirst();
 
     if (existing.isEmpty()) {
-      return ResponseEntity.ok("No log found for date: " + date);
+      String formattedDate =
+          instant
+              .atZone(ZoneId.systemDefault())
+              .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+
+      return ResponseEntity.ok("No log found for date: " + formattedDate);
     }
 
     return ResponseEntity.ok(logWorkoutMapper.toDto(existing.get()));
