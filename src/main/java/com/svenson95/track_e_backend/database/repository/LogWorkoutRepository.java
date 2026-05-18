@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface LogWorkoutRepository extends MongoRepository<LogWorkout, String> {
   Optional<LogWorkout> findByDate(String date);
 
-  Optional<LogWorkout> findLatestSetsByExerciseName(String exerciseName);
+  Optional<LogWorkout> findLatestSetsByExercise(String exercise);
 
   Optional<LogWorkout> findByLogId(Long logId);
 }

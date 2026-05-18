@@ -24,9 +24,9 @@ public class LogWorkoutController {
     return logWorkoutService.findLogWorkout(date);
   }
 
-  @GetMapping("/get/latest-log/{exerciseName}")
-  public LogWorkoutDTO getLatestLogForExercise(@PathVariable String exerciseName) {
-    return logWorkoutService.findLatestLogForExercise(exerciseName);
+  @GetMapping("/get/latest-log/{exercise}")
+  public LogWorkoutDTO getLatestLogForExercise(@PathVariable String exercise) {
+    return logWorkoutService.findLatestLogForExercise(exercise);
   }
 
   @PostMapping("/add/set/{logId}/{userId}")

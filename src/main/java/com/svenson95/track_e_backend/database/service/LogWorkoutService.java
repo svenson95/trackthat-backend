@@ -50,14 +50,14 @@ public class LogWorkoutService {
     return logWorkoutMapper.toDto(saved);
   }
 
-  public LogWorkoutDTO findLatestLogForExercise(String exerciseName) {
+  public LogWorkoutDTO findLatestLogForExercise(String exercise) {
     return logWorkoutRepository
-        .findLatestSetsByExerciseName(exerciseName)
+        .findLatestSetsByExercise(exercise)
         .map(
             log -> {
               List<LogWorkoutDTO.SetItemDTO> filteredSets =
                   log.getSets().stream()
-                      .filter(set -> exerciseName.equals(set.getExercise()))
+                      .filter(set -> exercise.equals(set.getExercise()))
                       .map(logWorkoutMapper::toDto)
                       .toList();
 
