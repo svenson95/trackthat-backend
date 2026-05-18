@@ -26,16 +26,21 @@ public class LogWorkoutService {
   }
 
   public ResponseEntity<?> findLogWorkout(String date) {
-    Instant instant = Instant.ofEpochMilli(Long.parseLong(date));
-    LocalDate targetDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+    ZoneId zone = ZoneId.of("Europe/Berlin");
+
+    LocalDate targetDate = parseUnixTimestamp(date).atZone(zone).toLocalDate();
+
+    long startOfDay = targetDate.atStartOfDay(zone).toInstant().toEpochMilli();
+
+    long startOfNextDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli();
 
     Optional<LogWorkout> existing =
         logWorkoutRepository.findAll().stream()
             .filter(
                 log -> {
-                  Instant logInstant = Instant.ofEpochMilli(Long.parseLong(log.getDate()));
-                  LocalDate logDate = logInstant.atZone(ZoneId.systemDefault()).toLocalDate();
-                  return logDate.equals(targetDate);
+                  long logMillis = parseUnixTimestamp(log.getDate()).toEpochMilli();
+
+                  return logMillis >= startOfDay && logMillis < startOfNextDay;
                 })
             .findFirst();
 
@@ -44,6 +49,16 @@ public class LogWorkoutService {
     }
 
     return ResponseEntity.ok(logWorkoutMapper.toDto(existing.get()));
+  }
+
+  private Instant parseUnixTimestamp(String value) {
+    long timestamp = Long.parseLong(value);
+
+    if (String.valueOf(Math.abs(timestamp)).length() <= 10) {
+      return Instant.ofEpochSecond(timestamp);
+    }
+
+    return Instant.ofEpochMilli(timestamp);
   }
 
   public LogWorkoutDTO findLatestLogForExercise(String exercise) {
