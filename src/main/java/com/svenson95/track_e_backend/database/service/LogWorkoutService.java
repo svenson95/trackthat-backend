@@ -51,22 +51,22 @@ public class LogWorkoutService {
   }
 
   public LogWorkoutDTO findLatestLogForExercise(String exercise) {
-    return logWorkoutRepository
-        .findTopBySetsExerciseOrderByDateDesc(exercise)
-        .map(
-            log -> {
-              List<LogWorkoutDTO.SetItemDTO> filteredSets =
-                  log.getSets().stream()
-                      .filter(set -> exercise.equals(set.getExercise()))
-                      .map(logWorkoutMapper::toDto)
-                      .toList();
 
-              LogWorkoutDTO dto = logWorkoutMapper.toDto(log);
-              dto.setSets(filteredSets);
+    LogWorkout log =
+        logWorkoutRepository
+            .findTopBySetsExerciseOrderByDateDesc(exercise)
+            .orElseThrow(() -> new RuntimeException("No log found"));
 
-              return dto;
-            })
-        .orElse(null);
+    List<LogWorkoutDTO.SetItemDTO> filteredSets =
+        log.getSets().stream()
+            .filter(set -> exercise.equals(set.getExercise()))
+            .map(logWorkoutMapper::toDto)
+            .toList();
+
+    LogWorkoutDTO dto = logWorkoutMapper.toDto(log);
+    dto.setSets(filteredSets);
+
+    return dto;
   }
 
   public LogWorkoutDTO updateOrCreateLog(
