@@ -99,6 +99,9 @@ public class LogWorkoutService {
 
     log.getSets().add(logWorkoutMapper.toEntity(setDto));
 
+    for (int i = 0; i < log.getSets().size(); i++) {
+      log.getSets().get(i).setItemId(Long.valueOf(i));
+    }
     LogWorkout saved = logWorkoutRepository.save(log);
 
     return logWorkoutMapper.toDto(saved);
@@ -125,6 +128,10 @@ public class LogWorkoutService {
     }
 
     log.getSets().set(index, logWorkoutMapper.toEntity(setDto));
+    for (int i = 0; i < log.getSets().size(); i++) {
+      log.getSets().get(i).setItemId(Long.valueOf(i));
+    }
+
     LogWorkout saved = logWorkoutRepository.save(log);
     return logWorkoutMapper.toDto(saved);
   }
