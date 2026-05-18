@@ -59,6 +59,12 @@ public class LogWorkout {
     this.sets = sets;
   }
 
+  public void normalizeSetIds() {
+    for (int i = 0; i < this.getSets().size(); i++) {
+      this.getSets().get(i).setItemId((long) i);
+    }
+  }
+
   public static class SetItem {
     private String exercise;
     private Double load;
