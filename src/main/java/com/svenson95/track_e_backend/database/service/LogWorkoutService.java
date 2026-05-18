@@ -81,26 +81,19 @@ public class LogWorkoutService {
   }
 
   public LogWorkoutDTO updateOrCreateLog(
-      String logId, LogWorkoutDTO.SetItemDTO setDto, String userId) {
+      String date, LogWorkoutDTO.SetItemDTO setDto, String userId) {
     LogWorkout log =
         logWorkoutRepository
-            .findByLogId(Long.valueOf(logId))
+            .findByUserIdAndDate(userId, date)
             .orElseGet(
-                () ->
-                    new LogWorkout(
-                        userId,
-                        Long.valueOf(logId),
-                        String.valueOf(System.currentTimeMillis()),
-                        new ArrayList<>()));
+                () -> new LogWorkout(userId, System.currentTimeMillis(), date, new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
     }
 
     log.getSets().add(logWorkoutMapper.toEntity(setDto));
-
     LogWorkout saved = logWorkoutRepository.save(log);
-
     return logWorkoutMapper.toDto(saved);
   }
 

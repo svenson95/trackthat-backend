@@ -29,12 +29,12 @@ public class LogWorkoutController {
     return logWorkoutService.findLatestLogForExercise(exercise);
   }
 
-  @PostMapping("/add/set/{logId}/{userId}")
+  @PostMapping("/add/set/{date}/{userId}")
   public LogWorkoutDTO addSetToLog(
-      @PathVariable String logId,
+      @PathVariable String date,
       @PathVariable String userId,
       @RequestBody LogWorkoutDTO.SetItemDTO setDto) {
-    return logWorkoutService.updateOrCreateLog(logId, setDto, userId);
+    return logWorkoutService.updateOrCreateLog(date, setDto, userId);
   }
 
   @PutMapping("/update/{logId}/{setIndex}")

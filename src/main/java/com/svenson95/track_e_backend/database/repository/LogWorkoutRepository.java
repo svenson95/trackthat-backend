@@ -10,4 +10,6 @@ public interface LogWorkoutRepository extends MongoRepository<LogWorkout, String
   Optional<LogWorkout> findTopBySetsExerciseOrderByDateDesc(String exercise);
 
   Optional<LogWorkout> findByLogId(Long logId);
+
+  Optional<LogWorkout> findByUserIdAndDate(String userId, String date);
 }
