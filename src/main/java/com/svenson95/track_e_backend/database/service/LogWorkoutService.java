@@ -1,16 +1,16 @@
 package com.svenson95.track_e_backend.database.service;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO;
 import com.svenson95.track_e_backend.database.mapper.LogWorkoutMapper;
 import com.svenson95.track_e_backend.database.model.LogWorkout;
 import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LogWorkoutService {
@@ -52,6 +52,49 @@ public class LogWorkoutService {
   public LogWorkoutDTO updateLogWorkout(LogWorkoutDTO dto) {
     LogWorkout updated = logWorkoutMapper.toEntity(dto);
     LogWorkout saved = logWorkoutRepository.save(updated);
+
+    return logWorkoutMapper.toDto(saved);
+  }
+
+  public LogWorkoutDTO findLatestLogForExercise(String exerciseName) {
+    return logWorkoutRepository
+        .findLatestSetsByExerciseName(exerciseName)
+        .map(
+            log -> {
+              List<LogWorkoutDTO.SetItemDTO> filteredSets =
+                  log.getSets().stream()
+                      .filter(set -> exerciseName.equals(set.getExercise()))
+                      .map(logWorkoutMapper::toDto)
+                      .toList();
+
+              LogWorkoutDTO dto = logWorkoutMapper.toDto(log);
+              dto.setSets(filteredSets);
+
+              return dto;
+            })
+        .orElse(null);
+  }
+
+  public LogWorkoutDTO updateOrCreateLog(
+      String logId, LogWorkoutDTO.SetItemDTO setDto, String userId) {
+    LogWorkout log =
+        logWorkoutRepository
+            .findByLogId(Long.valueOf(logId))
+            .orElseGet(
+                () ->
+                    new LogWorkout(
+                        userId,
+                        Long.valueOf(logId),
+                        String.valueOf(System.currentTimeMillis()),
+                        new ArrayList<>()));
+
+    if (log.getSets() == null) {
+      log.setSets(new ArrayList<>());
+    }
+
+    log.getSets().add(logWorkoutMapper.toEntity(setDto));
+
+    LogWorkout saved = logWorkoutRepository.save(log);
 
     return logWorkoutMapper.toDto(saved);
   }
