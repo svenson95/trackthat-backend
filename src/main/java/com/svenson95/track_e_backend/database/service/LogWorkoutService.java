@@ -82,19 +82,34 @@ public class LogWorkoutService {
 
   public LogWorkoutDTO updateOrCreateLog(
       String date, LogWorkoutDTO.SetItemDTO setDto, String userId) {
+    ZoneId zone = ZoneId.of("Europe/Berlin");
+    LocalDate targetTrainingDay = toLocalDate(date, zone);
+
     LogWorkout log =
-        logWorkoutRepository
-            .findByUserIdAndDate(userId, date)
-            .orElseGet(
-                () -> new LogWorkout(userId, System.currentTimeMillis(), date, new ArrayList<>()));
+        logWorkoutRepository.findAll().stream()
+            .filter(existingLog -> userId.equals(existingLog.getUserId()))
+            .filter(
+                existingLog -> toLocalDate(existingLog.getDate(), zone).equals(targetTrainingDay))
+            .findFirst()
+            .orElseGet(() -> new LogWorkout(userId, createLogId(), date, new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
     }
 
     log.getSets().add(logWorkoutMapper.toEntity(setDto));
+
     LogWorkout saved = logWorkoutRepository.save(log);
+
     return logWorkoutMapper.toDto(saved);
+  }
+
+  private LocalDate toLocalDate(String timestamp, ZoneId zone) {
+    return Instant.ofEpochMilli(Long.parseLong(timestamp)).atZone(zone).toLocalDate();
+  }
+
+  private Long createLogId() {
+    return System.currentTimeMillis();
   }
 
   public LogWorkoutDTO updateSetInLog(
