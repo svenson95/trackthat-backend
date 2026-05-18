@@ -61,7 +61,7 @@ public class LogWorkout {
 
   public static class SetItem {
     private String exercise;
-    private Long load;
+    private Double load;
     private Long reps;
     private Long itemId;
     private String time;
@@ -69,7 +69,7 @@ public class LogWorkout {
 
     public SetItem() {}
 
-    public SetItem(String exercise, Long load, Long reps, Long itemId, String time, String note) {
+    public SetItem(String exercise, Double load, Long reps, Long itemId, String time, String note) {
       this.exercise = exercise;
       this.load = load;
       this.reps = reps;
@@ -86,11 +86,11 @@ public class LogWorkout {
       this.exercise = exercise;
     }
 
-    public Long getLoad() {
+    public Double getLoad() {
       return load;
     }
 
-    public void setLoad(Long load) {
+    public void setLoad(Double load) {
       this.load = load;
     }
 

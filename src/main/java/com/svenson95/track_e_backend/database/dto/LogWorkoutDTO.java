@@ -52,7 +52,7 @@ public class LogWorkoutDTO {
 
   public static class SetItemDTO {
     private String exercise;
-    private Long load;
+    private Double load;
     private Long reps;
     private Long itemId;
     private String time;
@@ -66,11 +66,11 @@ public class LogWorkoutDTO {
       this.exercise = exercise;
     }
 
-    public Long getLoad() {
+    public Double getLoad() {
       return load;
     }
 
-    public void setLoad(Long load) {
+    public void setLoad(Double load) {
       this.load = load;
     }
 
