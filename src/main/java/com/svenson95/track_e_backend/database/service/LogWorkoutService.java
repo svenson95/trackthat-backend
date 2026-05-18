@@ -146,6 +146,10 @@ public class LogWorkoutService {
       return ResponseEntity.ok("Log deleted because it became empty");
     }
 
+    for (int i = 0; i < log.getSets().size(); i++) {
+      log.getSets().get(i).setItemId(Long.valueOf(i));
+    }
+
     LogWorkout saved = logWorkoutRepository.save(log);
     return ResponseEntity.ok(logWorkoutMapper.toDto(saved));
   }
