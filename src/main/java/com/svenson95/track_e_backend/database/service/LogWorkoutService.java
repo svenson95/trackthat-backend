@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,13 +46,6 @@ public class LogWorkoutService {
     LogWorkout newLog = new LogWorkout();
     newLog.setDate(date);
     LogWorkout saved = logWorkoutRepository.save(newLog);
-
-    return logWorkoutMapper.toDto(saved);
-  }
-
-  public LogWorkoutDTO updateLogWorkout(LogWorkoutDTO dto) {
-    LogWorkout updated = logWorkoutMapper.toEntity(dto);
-    LogWorkout saved = logWorkoutRepository.save(updated);
 
     return logWorkoutMapper.toDto(saved);
   }
@@ -97,5 +91,39 @@ public class LogWorkoutService {
     LogWorkout saved = logWorkoutRepository.save(log);
 
     return logWorkoutMapper.toDto(saved);
+  }
+
+  public LogWorkoutDTO updateSetInLog(
+      String logId, String setIndex, LogWorkoutDTO.SetItemDTO setDto) {
+    LogWorkout log =
+        logWorkoutRepository
+            .findByLogId(Long.valueOf(logId))
+            .orElseThrow(() -> new RuntimeException("Log not found: " + logId));
+    int index = Integer.parseInt(setIndex);
+
+    if (log.getSets() == null || index < 0 || index >= log.getSets().size()) {
+      throw new RuntimeException("Set index out of bounds: " + setIndex);
+    }
+
+    log.getSets().set(index, logWorkoutMapper.toEntity(setDto));
+    LogWorkout saved = logWorkoutRepository.save(log);
+    return logWorkoutMapper.toDto(saved);
+  }
+
+  public ResponseEntity<?> deleteSetInLog(String logId, String setIndex) {
+    LogWorkout log =
+        logWorkoutRepository
+            .findByLogId(Long.valueOf(logId))
+            .orElseThrow(() -> new RuntimeException("Log not found"));
+    int index = Integer.parseInt(setIndex);
+    log.getSets().remove(index);
+
+    if (log.getSets().isEmpty()) {
+      logWorkoutRepository.delete(log);
+      return ResponseEntity.ok("Log deleted because it became empty");
+    }
+
+    LogWorkout saved = logWorkoutRepository.save(log);
+    return ResponseEntity.ok(logWorkoutMapper.toDto(saved));
   }
 }
