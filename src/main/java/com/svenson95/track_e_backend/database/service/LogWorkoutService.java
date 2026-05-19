@@ -83,21 +83,14 @@ public class LogWorkoutService {
   public LogWorkoutDTO updateOrCreateLog(
       String date, LogWorkoutDTO.SetItemDTO setDto, String userId) {
     ZoneId zone = ZoneId.of("Europe/Berlin");
-    LocalDate targetTrainingDay = LocalDate.now(zone);
+    LocalDate targetTrainingDay = toLocalDate(date, zone);
     LogWorkout log =
         logWorkoutRepository.findAll().stream()
             .filter(existingLog -> userId.equals(existingLog.getUserId()))
             .filter(
-                existingLog -> toLocalDate(existingLog.getDate(), zone).equals(targetTrainingDay))
+                existingLog -> isSameTrainingDay(existingLog.getDate(), targetTrainingDay, zone))
             .findFirst()
-            .orElseGet(
-                () ->
-                    new LogWorkout(
-                        userId,
-                        createLogId(userId),
-                        String.valueOf(
-                            targetTrainingDay.atStartOfDay(zone).toInstant().toEpochMilli()),
-                        new ArrayList<>()));
+            .orElseGet(() -> new LogWorkout(userId, createLogId(userId), date, new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
@@ -108,6 +101,11 @@ public class LogWorkoutService {
     LogWorkout saved = logWorkoutRepository.save(log);
 
     return logWorkoutMapper.toDto(saved);
+  }
+
+  private boolean isSameTrainingDay(String timestamp, LocalDate trainingDay, ZoneId zone) {
+    LocalDate logTrainingDay = toLocalDate(timestamp, zone);
+    return logTrainingDay.equals(trainingDay);
   }
 
   private LocalDate toLocalDate(String timestamp, ZoneId zone) {
