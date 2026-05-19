@@ -1,17 +1,19 @@
 package com.svenson95.track_e_backend.database.service;
 
-import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO;
-import com.svenson95.track_e_backend.database.mapper.LogWorkoutMapper;
-import com.svenson95.track_e_backend.database.model.LogWorkout;
-import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO;
+import com.svenson95.track_e_backend.database.mapper.LogWorkoutMapper;
+import com.svenson95.track_e_backend.database.model.LogWorkout;
+import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 
 @Service
 public class LogWorkoutService {
@@ -91,7 +93,10 @@ public class LogWorkoutService {
             .filter(
                 existingLog -> toLocalDate(existingLog.getDate(), zone).equals(targetTrainingDay))
             .findFirst()
-            .orElseGet(() -> new LogWorkout(userId, createLogId(), date, new ArrayList<>()));
+            .orElseGet(
+                () ->
+                    new LogWorkout(
+                        userId, createLogId(Long.valueOf(userId)), date, new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
@@ -109,8 +114,9 @@ public class LogWorkoutService {
     return Instant.ofEpochMilli(Long.parseLong(timestamp)).atZone(zone).toLocalDate();
   }
 
-  private Long createLogId() {
-    return System.currentTimeMillis();
+  private Long createLogId(Long userId) {
+    Long maxLogId = logWorkoutRepository.findMaxLogIdByUserId(userId);
+    return maxLogId == null ? 1L : maxLogId + 1L;
   }
 
   public LogWorkoutDTO updateSetInLog(
