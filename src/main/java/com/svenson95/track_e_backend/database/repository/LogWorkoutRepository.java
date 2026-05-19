@@ -18,5 +18,5 @@ public interface LogWorkoutRepository extends MongoRepository<LogWorkout, String
   Optional<LogWorkout> findByUserIdAndDate(String userId, String date);
 
   @Query("SELECT MAX(l.logId) FROM Log l WHERE l.user.id = :userId")
-  Long findMaxLogIdByUserId(@Param("userId") Long userId);
+  Long findMaxLogIdByUserId(@Param("userId") String userId);
 }

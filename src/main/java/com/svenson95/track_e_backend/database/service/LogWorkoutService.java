@@ -93,10 +93,7 @@ public class LogWorkoutService {
             .filter(
                 existingLog -> toLocalDate(existingLog.getDate(), zone).equals(targetTrainingDay))
             .findFirst()
-            .orElseGet(
-                () ->
-                    new LogWorkout(
-                        userId, createLogId(Long.valueOf(userId)), date, new ArrayList<>()));
+            .orElseGet(() -> new LogWorkout(userId, createLogId(userId), date, new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
@@ -114,7 +111,7 @@ public class LogWorkoutService {
     return Instant.ofEpochMilli(Long.parseLong(timestamp)).atZone(zone).toLocalDate();
   }
 
-  private Long createLogId(Long userId) {
+  private Long createLogId(String userId) {
     Long maxLogId = logWorkoutRepository.findMaxLogIdByUserId(userId);
     return maxLogId == null ? 1L : maxLogId + 1L;
   }
