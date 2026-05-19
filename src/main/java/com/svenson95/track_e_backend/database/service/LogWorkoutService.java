@@ -149,7 +149,7 @@ public class LogWorkoutService {
 
     if (log.getSets().isEmpty()) {
       logWorkoutRepository.delete(log);
-      return ResponseEntity.ok("Log deleted because it became empty");
+      return ResponseEntity.noContent().build();
     }
 
     log.normalizeSetIds();
