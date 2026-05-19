@@ -1,19 +1,17 @@
 package com.svenson95.track_e_backend.database.service;
 
+import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO;
+import com.svenson95.track_e_backend.database.mapper.LogWorkoutMapper;
+import com.svenson95.track_e_backend.database.model.LogWorkout;
+import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO;
-import com.svenson95.track_e_backend.database.mapper.LogWorkoutMapper;
-import com.svenson95.track_e_backend.database.model.LogWorkout;
-import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 
 @Service
 public class LogWorkoutService {
@@ -85,22 +83,27 @@ public class LogWorkoutService {
   public LogWorkoutDTO updateOrCreateLog(
       String date, LogWorkoutDTO.SetItemDTO setDto, String userId) {
     ZoneId zone = ZoneId.of("Europe/Berlin");
-    LocalDate targetTrainingDay = toLocalDate(date, zone);
-
+    LocalDate targetTrainingDay = LocalDate.now(zone);
     LogWorkout log =
         logWorkoutRepository.findAll().stream()
             .filter(existingLog -> userId.equals(existingLog.getUserId()))
             .filter(
                 existingLog -> toLocalDate(existingLog.getDate(), zone).equals(targetTrainingDay))
             .findFirst()
-            .orElseGet(() -> new LogWorkout(userId, createLogId(userId), date, new ArrayList<>()));
+            .orElseGet(
+                () ->
+                    new LogWorkout(
+                        userId,
+                        createLogId(userId),
+                        String.valueOf(
+                            targetTrainingDay.atStartOfDay(zone).toInstant().toEpochMilli()),
+                        new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
     }
 
     log.getSets().add(logWorkoutMapper.toEntity(setDto));
-
     log.normalizeSetIds();
     LogWorkout saved = logWorkoutRepository.save(log);
 
@@ -108,7 +111,7 @@ public class LogWorkoutService {
   }
 
   private LocalDate toLocalDate(String timestamp, ZoneId zone) {
-    return Instant.ofEpochMilli(Long.parseLong(timestamp)).atZone(zone).toLocalDate();
+    return parseUnixTimestamp(timestamp).atZone(zone).toLocalDate();
   }
 
   private Long createLogId(String userId) {
