@@ -112,8 +112,11 @@ public class LogWorkoutService {
   }
 
   private Long createLogId(String userId) {
-    Long maxLogId = logWorkoutRepository.findMaxLogIdByUserId(userId);
-    return maxLogId == null ? 1L : maxLogId + 1L;
+    return logWorkoutRepository
+        .findTopByUserIdOrderByLogIdDesc(userId)
+        .map(LogWorkout::getLogId)
+        .map(id -> id + 1)
+        .orElse(1L);
   }
 
   public LogWorkoutDTO updateSetInLog(
