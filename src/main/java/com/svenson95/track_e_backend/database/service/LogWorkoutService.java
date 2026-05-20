@@ -157,6 +157,6 @@ public class LogWorkoutService {
     Instant logStart = parseUnixTimestamp(logStartTimestamp);
     Instant setTime = parseUnixTimestamp(setTimestamp);
 
-    return !setTime.isBefore(logStart) && setTime.isBefore(logStart.plus(Duration.ofHours(4)));
+    return !setTime.isBefore(logStart) && setTime.isBefore(logStart.plus(Duration.ofHours(6)));
   }
 }
