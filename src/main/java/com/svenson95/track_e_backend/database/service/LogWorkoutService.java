@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -47,22 +48,22 @@ public class LogWorkoutService {
     return Instant.ofEpochMilli(timestamp);
   }
 
-  public LogWorkoutDTO findLatestLogForExercise(String exercise, String userId) {
-    LogWorkout log =
-        logWorkoutRepository
-            .findTopByUserIdAndSetsExerciseOrderByDateDesc(userId, exercise)
-            .orElseThrow(() -> new RuntimeException("No log found"));
+  public Optional<LogWorkoutDTO> findLatestLogForExercise(String exercise, String userId) {
+    return logWorkoutRepository
+        .findTopByUserIdAndSetsExerciseOrderByDateDesc(userId, exercise)
+        .map(
+            log -> {
+              List<LogWorkoutDTO.SetItemDTO> filteredSets =
+                  log.getSets().stream()
+                      .filter(set -> exercise.equals(set.getExercise()))
+                      .map(logWorkoutMapper::toDto)
+                      .toList();
 
-    List<LogWorkoutDTO.SetItemDTO> filteredSets =
-        log.getSets().stream()
-            .filter(set -> exercise.equals(set.getExercise()))
-            .map(logWorkoutMapper::toDto)
-            .toList();
+              LogWorkoutDTO dto = logWorkoutMapper.toDto(log);
+              dto.setSets(filteredSets);
 
-    LogWorkoutDTO dto = logWorkoutMapper.toDto(log);
-    dto.setSets(filteredSets);
-
-    return dto;
+              return dto;
+            });
   }
 
   public LogWorkoutDTO updateOrCreateLog(
