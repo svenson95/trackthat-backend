@@ -29,8 +29,8 @@ public class LogWorkoutService {
     ZoneId zone = ZoneId.of("Europe/Berlin");
     LocalDate targetDate = parseUnixTimestamp(date).atZone(zone).toLocalDate();
 
-    long startOfDay = targetDate.atStartOfDay(zone).toInstant().toEpochMilli();
-    long endOfDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1;
+    long startOfDay = targetDate.atStartOfDay(zone).toInstant().getEpochSecond();
+    long endOfDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().getEpochSecond() - 1;
 
     return logWorkoutRepository
         .findFirstByUserIdAndDateBetween(userId, startOfDay, endOfDay)
