@@ -7,7 +7,7 @@ public class WorkoutDTO {
   private String userId;
   private Long workoutId;
   private Long listId;
-  private String lastUpdated; // UnixTimestring
+  private Long lastUpdated; // unix timestamp
   private String name;
   private List<ListItemDTO> list;
 
@@ -43,11 +43,11 @@ public class WorkoutDTO {
     this.listId = listId;
   }
 
-  public String getLastUpdated() {
+  public Long getLastUpdated() {
     return lastUpdated;
   }
 
-  public void setLastUpdated(String lastUpdated) {
+  public void setLastUpdated(Long lastUpdated) {
     this.lastUpdated = lastUpdated;
   }
 

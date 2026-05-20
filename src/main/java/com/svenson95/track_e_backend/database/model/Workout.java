@@ -12,7 +12,7 @@ public class Workout {
   private String userId; // MongoDB doc id
   private Long workoutId;
   private Long listId;
-  private String lastUpdated; // UnixTimestring
+  private Long lastUpdated; // unix timestamp
   private String name;
   private List<ListItem> list;
 
@@ -22,7 +22,7 @@ public class Workout {
       String userId,
       Long workoutId,
       Long listId,
-      String lastUpdated,
+      Long lastUpdated,
       String name,
       List<ListItem> list) {
     this.userId = userId;
@@ -61,11 +61,11 @@ public class Workout {
     this.listId = listId;
   }
 
-  public String getLastUpdated() {
+  public Long getLastUpdated() {
     return lastUpdated;
   }
 
-  public void setLastUpdated(String lastUpdated) {
+  public void setLastUpdated(Long lastUpdated) {
     this.lastUpdated = lastUpdated;
   }
 
