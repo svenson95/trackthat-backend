@@ -6,8 +6,6 @@ import com.svenson95.track_e_backend.database.model.LogWorkout;
 import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +17,8 @@ public class LogWorkoutService {
   private final LogWorkoutRepository logWorkoutRepository;
   private final LogWorkoutMapper logWorkoutMapper;
 
+  private final Duration WORKOUT_DURATION = Duration.ofHours(6);
+
   public LogWorkoutService(
       LogWorkoutRepository logWorkoutRepository, LogWorkoutMapper logWorkoutMapper) {
     this.logWorkoutRepository = logWorkoutRepository;
@@ -26,14 +26,15 @@ public class LogWorkoutService {
   }
 
   public ResponseEntity<?> findLogWorkout(Long date, String userId) {
-    ZoneId zone = ZoneId.of("Europe/Berlin");
-    LocalDate targetDate = parseUnixTimestamp(date).atZone(zone).toLocalDate();
+    Instant setTime = parseUnixTimestamp(date);
+    Instant earliestPossibleWorkoutStart = setTime.minus(WORKOUT_DURATION);
 
-    long startOfDay = targetDate.atStartOfDay(zone).toInstant().getEpochSecond();
-    long endOfDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().getEpochSecond() - 1;
+    long start = earliestPossibleWorkoutStart.getEpochSecond();
+    long end = setTime.getEpochSecond();
 
     return logWorkoutRepository
-        .findFirstByUserIdAndDateBetweenOrderByDateDesc(userId, startOfDay, endOfDay)
+        .findFirstByUserIdAndDateBetweenOrderByDateDesc(userId, start, end)
+        .filter(log -> belongsToSameWorkout(log.getDate(), date))
         .map(logWorkoutMapper::toDto)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.noContent().build());
@@ -141,7 +142,6 @@ public class LogWorkoutService {
     Instant logStart = parseUnixTimestamp(logStartTimestamp);
     Instant setTime = parseUnixTimestamp(setTimestamp);
 
-    Duration WORKOUT_DURATION = Duration.ofHours(6);
     Instant workoutEnd = logStart.plus(WORKOUT_DURATION);
     return !setTime.isBefore(logStart) && setTime.isBefore(workoutEnd);
   }
