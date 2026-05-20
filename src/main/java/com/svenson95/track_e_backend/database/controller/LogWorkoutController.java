@@ -25,12 +25,9 @@ public class LogWorkoutController {
   }
 
   @GetMapping("/get/latest-log/{exercise}/{userId}")
-  public ResponseEntity<LogWorkoutDTO> getLatestLogForExercise(
+  public LogWorkoutDTO getLatestLogForExercise(
       @PathVariable String exercise, @PathVariable String userId) {
-    return logWorkoutService
-        .findLatestLogForExercise(exercise, userId)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.noContent().build());
+    return logWorkoutService.findLatestLogForExercise(exercise, userId);
   }
 
   @PostMapping("/add/set/{date}/{userId}")
