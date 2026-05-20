@@ -4,6 +4,7 @@ import com.svenson95.track_e_backend.database.dto.LogWorkoutDTO;
 import com.svenson95.track_e_backend.database.mapper.LogWorkoutMapper;
 import com.svenson95.track_e_backend.database.model.LogWorkout;
 import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,11 +28,8 @@ public class LogWorkoutService {
 
   public ResponseEntity<?> findLogWorkout(String date) {
     ZoneId zone = ZoneId.of("Europe/Berlin");
-
     LocalDate targetDate = parseUnixTimestamp(date).atZone(zone).toLocalDate();
-
     long startOfDay = targetDate.atStartOfDay(zone).toInstant().toEpochMilli();
-
     long startOfNextDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli();
 
     Optional<LogWorkout> existing =
@@ -82,13 +80,11 @@ public class LogWorkoutService {
 
   public LogWorkoutDTO updateOrCreateLog(
       String date, LogWorkoutDTO.SetItemDTO setDto, String userId) {
-    ZoneId zone = ZoneId.of("Europe/Berlin");
-    LocalDate targetTrainingDay = toLocalDate(date, zone);
+
     LogWorkout log =
         logWorkoutRepository.findAll().stream()
             .filter(existingLog -> userId.equals(existingLog.getUserId()))
-            .filter(
-                existingLog -> isSameTrainingDay(existingLog.getDate(), targetTrainingDay, zone))
+            .filter(existingLog -> belongsToSameWorkout(existingLog.getDate(), date))
             .findFirst()
             .orElseGet(() -> new LogWorkout(userId, createLogId(userId), date, new ArrayList<>()));
 
@@ -101,11 +97,6 @@ public class LogWorkoutService {
     LogWorkout saved = logWorkoutRepository.save(log);
 
     return logWorkoutMapper.toDto(saved);
-  }
-
-  private boolean isSameTrainingDay(String timestamp, LocalDate trainingDay, ZoneId zone) {
-    LocalDate logTrainingDay = toLocalDate(timestamp, zone);
-    return logTrainingDay.equals(trainingDay);
   }
 
   private LocalDate toLocalDate(String timestamp, ZoneId zone) {
@@ -160,5 +151,12 @@ public class LogWorkoutService {
 
     LogWorkout saved = logWorkoutRepository.save(log);
     return ResponseEntity.ok(logWorkoutMapper.toDto(saved));
+  }
+
+  private boolean belongsToSameWorkout(String logStartTimestamp, String setTimestamp) {
+    Instant logStart = parseUnixTimestamp(logStartTimestamp);
+    Instant setTime = parseUnixTimestamp(setTimestamp);
+
+    return !setTime.isBefore(logStart) && setTime.isBefore(logStart.plus(Duration.ofHours(4)));
   }
 }
