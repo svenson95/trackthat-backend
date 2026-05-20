@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface LogWorkoutRepository extends MongoRepository<LogWorkout, String> {
   Optional<LogWorkout> findByDate(String date);
 
-  Optional<LogWorkout> findFirstByUserIdAndDateGreaterThanEqualAndDateLessThan(
-      String userId, Long startOfDay, Long startOfNextDay);
+  Optional<LogWorkout> findFirstByUserIdAndDateBetween(
+      String userId, Long startOfDay, Long endOfDay);
 
   Optional<LogWorkout> findTopByUserIdAndSetsExerciseOrderByDateDesc(
       String userId, String exercise);

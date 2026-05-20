@@ -30,10 +30,10 @@ public class LogWorkoutService {
     LocalDate targetDate = parseUnixTimestamp(date).atZone(zone).toLocalDate();
 
     long startOfDay = targetDate.atStartOfDay(zone).toInstant().toEpochMilli();
-    long startOfNextDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli();
+    long endOfDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1;
 
     return logWorkoutRepository
-        .findFirstByUserIdAndDateGreaterThanEqualAndDateLessThan(userId, startOfDay, startOfNextDay)
+        .findFirstByUserIdAndDateBetween(userId, startOfDay, endOfDay)
         .map(logWorkoutMapper::toDto)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.noContent().build());
