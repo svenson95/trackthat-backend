@@ -79,14 +79,15 @@ public class LogWorkoutService {
   }
 
   public LogWorkoutDTO updateOrCreateLog(
-      String date, LogWorkoutDTO.SetItemDTO setDto, String userId) {
+      String setDate, LogWorkoutDTO.SetItemDTO setDto, String userId) {
 
     LogWorkout log =
         logWorkoutRepository.findAll().stream()
             .filter(existingLog -> userId.equals(existingLog.getUserId()))
-            .filter(existingLog -> belongsToSameWorkout(existingLog.getDate(), date))
+            .filter(existingLog -> belongsToSameWorkout(existingLog.getDate(), setDate))
             .findFirst()
-            .orElseGet(() -> new LogWorkout(userId, createLogId(userId), date, new ArrayList<>()));
+            .orElseGet(
+                () -> new LogWorkout(userId, createLogId(userId), setDate, new ArrayList<>()));
 
     if (log.getSets() == null) {
       log.setSets(new ArrayList<>());
@@ -97,10 +98,6 @@ public class LogWorkoutService {
     LogWorkout saved = logWorkoutRepository.save(log);
 
     return logWorkoutMapper.toDto(saved);
-  }
-
-  private LocalDate toLocalDate(String timestamp, ZoneId zone) {
-    return parseUnixTimestamp(timestamp).atZone(zone).toLocalDate();
   }
 
   private Long createLogId(String userId) {
@@ -157,6 +154,8 @@ public class LogWorkoutService {
     Instant logStart = parseUnixTimestamp(logStartTimestamp);
     Instant setTime = parseUnixTimestamp(setTimestamp);
 
-    return !setTime.isBefore(logStart) && setTime.isBefore(logStart.plus(Duration.ofHours(6)));
+    Duration WORKOUT_DURATION = Duration.ofHours(6);
+    Instant workoutEnd = logStart.plus(WORKOUT_DURATION);
+    return !setTime.isBefore(logStart) && setTime.isBefore(workoutEnd);
   }
 }
