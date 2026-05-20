@@ -10,8 +10,8 @@ public interface LogWorkoutRepository extends MongoRepository<LogWorkout, String
   Optional<LogWorkout> findFirstByUserIdAndDateBetweenOrderByDateDesc(
       String userId, Long startOfDay, Long endOfDay);
 
-  Optional<LogWorkout> findTopByUserIdAndSetsExerciseOrderByDateDesc(
-      String userId, String exercise);
+  Optional<LogWorkout> findTopByUserIdAndSetsExerciseAndDateGreaterThanEqualOrderByDateDesc(
+      String userId, String exercise, long earliestDate);
 
   Optional<LogWorkout> findByLogId(Long logId);
 

@@ -44,10 +44,13 @@ public class LogWorkoutService {
   }
 
   public LogWorkoutDTO findLatestLogForExercise(String exercise, String userId) {
+    long earliestDate = Instant.now().minus(WORKOUT_DURATION).getEpochSecond();
+
     LogWorkout log =
         logWorkoutRepository
-            .findTopByUserIdAndSetsExerciseOrderByDateDesc(userId, exercise)
-            .orElseThrow(() -> new RuntimeException("No log found"));
+            .findTopByUserIdAndSetsExerciseAndDateGreaterThanEqualOrderByDateDesc(
+                userId, exercise, earliestDate)
+            .orElseThrow(() -> new RuntimeException("No latest log found"));
 
     List<LogWorkoutDTO.SetItemDTO> filteredSets =
         log.getSets().stream()
