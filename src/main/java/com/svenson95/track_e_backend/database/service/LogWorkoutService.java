@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,44 +25,32 @@ public class LogWorkoutService {
     this.logWorkoutMapper = logWorkoutMapper;
   }
 
-  public ResponseEntity<?> findLogWorkout(String date) {
+  public ResponseEntity<?> findLogWorkout(Long date, String userId) {
     ZoneId zone = ZoneId.of("Europe/Berlin");
     LocalDate targetDate = parseUnixTimestamp(date).atZone(zone).toLocalDate();
+
     long startOfDay = targetDate.atStartOfDay(zone).toInstant().toEpochMilli();
     long startOfNextDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli();
 
-    Optional<LogWorkout> existing =
-        logWorkoutRepository.findAll().stream()
-            .filter(
-                log -> {
-                  long logMillis = parseUnixTimestamp(log.getDate()).toEpochMilli();
-
-                  return logMillis >= startOfDay && logMillis < startOfNextDay;
-                })
-            .findFirst();
-
-    if (existing.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
-
-    return ResponseEntity.ok(logWorkoutMapper.toDto(existing.get()));
+    return logWorkoutRepository
+        .findFirstByUserIdAndDateGreaterThanEqualAndDateLessThan(userId, startOfDay, startOfNextDay)
+        .map(logWorkoutMapper::toDto)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.noContent().build());
   }
 
-  private Instant parseUnixTimestamp(String value) {
-    long timestamp = Long.parseLong(value);
-
+  private Instant parseUnixTimestamp(Long value) {
+    long timestamp = value;
     if (String.valueOf(Math.abs(timestamp)).length() <= 10) {
       return Instant.ofEpochSecond(timestamp);
     }
-
     return Instant.ofEpochMilli(timestamp);
   }
 
-  public LogWorkoutDTO findLatestLogForExercise(String exercise) {
-
+  public LogWorkoutDTO findLatestLogForExercise(String exercise, String userId) {
     LogWorkout log =
         logWorkoutRepository
-            .findTopBySetsExerciseOrderByDateDesc(exercise)
+            .findTopByUserIdAndSetsExerciseOrderByDateDesc(userId, exercise)
             .orElseThrow(() -> new RuntimeException("No log found"));
 
     List<LogWorkoutDTO.SetItemDTO> filteredSets =
@@ -79,7 +66,7 @@ public class LogWorkoutService {
   }
 
   public LogWorkoutDTO updateOrCreateLog(
-      String setDate, LogWorkoutDTO.SetItemDTO setDto, String userId) {
+      Long setDate, LogWorkoutDTO.SetItemDTO setDto, String userId) {
 
     LogWorkout log =
         logWorkoutRepository.findAll().stream()
@@ -150,7 +137,7 @@ public class LogWorkoutService {
     return ResponseEntity.ok(logWorkoutMapper.toDto(saved));
   }
 
-  private boolean belongsToSameWorkout(String logStartTimestamp, String setTimestamp) {
+  private boolean belongsToSameWorkout(Long logStartTimestamp, Long setTimestamp) {
     Instant logStart = parseUnixTimestamp(logStartTimestamp);
     Instant setTime = parseUnixTimestamp(setTimestamp);
 

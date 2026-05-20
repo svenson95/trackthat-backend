@@ -6,7 +6,7 @@ public class LogWorkoutDTO {
   private String id; // MongoDB doc id
   private String userId;
   private Long logId;
-  private String date;
+  private Long date; // unix timestamp
 
   private List<SetItemDTO> sets;
 
@@ -34,11 +34,11 @@ public class LogWorkoutDTO {
     this.logId = logId;
   }
 
-  public String getDate() {
+  public Long getDate() {
     return date;
   }
 
-  public void setDate(String date) {
+  public void setDate(Long date) {
     this.date = date;
   }
 

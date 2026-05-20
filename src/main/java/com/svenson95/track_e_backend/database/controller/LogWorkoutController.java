@@ -19,19 +19,20 @@ public class LogWorkoutController {
 
   @Autowired private LogWorkoutService logWorkoutService;
 
-  @GetMapping("/get/{date}")
-  public ResponseEntity<?> getLogWorkouts(@PathVariable String date) {
-    return logWorkoutService.findLogWorkout(date);
+  @GetMapping("/get/{date}/{userId}")
+  public ResponseEntity<?> getLogWorkouts(@PathVariable Long date, @PathVariable String userId) {
+    return logWorkoutService.findLogWorkout(date, userId);
   }
 
-  @GetMapping("/get/latest-log/{exercise}")
-  public LogWorkoutDTO getLatestLogForExercise(@PathVariable String exercise) {
-    return logWorkoutService.findLatestLogForExercise(exercise);
+  @GetMapping("/get/latest-log/{exercise}/{userId}")
+  public LogWorkoutDTO getLatestLogForExercise(
+      @PathVariable String exercise, @PathVariable String userId) {
+    return logWorkoutService.findLatestLogForExercise(exercise, userId);
   }
 
   @PostMapping("/add/set/{date}/{userId}")
   public LogWorkoutDTO addSetToLog(
-      @PathVariable String date,
+      @PathVariable Long date,
       @PathVariable String userId,
       @RequestBody LogWorkoutDTO.SetItemDTO setDto) {
     return logWorkoutService.updateOrCreateLog(date, setDto, userId);

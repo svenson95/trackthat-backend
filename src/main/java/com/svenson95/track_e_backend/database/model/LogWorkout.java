@@ -10,13 +10,13 @@ public class LogWorkout {
   @Id private String _id;
   private String userId; // MongoDB doc id
   private Long logId;
-  private String date; // UnixTimestring
+  private Long date; // unix timestamp
 
   private List<SetItem> sets;
 
   public LogWorkout() {}
 
-  public LogWorkout(String userId, Long logId, String date, List<SetItem> sets) {
+  public LogWorkout(String userId, Long logId, Long date, List<SetItem> sets) {
     this.userId = userId;
     this.logId = logId;
     this.date = date;
@@ -43,11 +43,11 @@ public class LogWorkout {
     this.logId = logId;
   }
 
-  public String getDate() {
+  public Long getDate() {
     return date;
   }
 
-  public void setDate(String date) {
+  public void setDate(Long date) {
     this.date = date;
   }
 
