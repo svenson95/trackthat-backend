@@ -34,7 +34,7 @@ public class LogWorkoutService {
     long endOfDay = targetDate.plusDays(1).atStartOfDay(zone).toInstant().getEpochSecond() - 1;
 
     return logWorkoutRepository
-        .findLastByUserIdAndDateBetweenOrderByDateAsc(userId, startOfDay, endOfDay)
+        .findFirstByUserIdAndDateBetweenOrderByDateDesc(userId, startOfDay, endOfDay)
         .map(logWorkoutMapper::toDto)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.noContent().build());
