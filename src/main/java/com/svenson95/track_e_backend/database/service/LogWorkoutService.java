@@ -6,6 +6,8 @@ import com.svenson95.track_e_backend.database.model.LogWorkout;
 import com.svenson95.track_e_backend.database.repository.LogWorkoutRepository;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,8 @@ public class LogWorkoutService {
   private final LogWorkoutRepository logWorkoutRepository;
   private final LogWorkoutMapper logWorkoutMapper;
 
-  private final Duration WORKOUT_DURATION = Duration.ofHours(6);
+  private static final ZoneId USER_ZONE = ZoneId.of("Europe/Berlin");
+  private static final Duration WORKOUT_DURATION = Duration.ofHours(6);
 
   public LogWorkoutService(
       LogWorkoutRepository logWorkoutRepository, LogWorkoutMapper logWorkoutMapper) {
@@ -26,7 +29,7 @@ public class LogWorkoutService {
   }
 
   public ResponseEntity<?> findLogWorkout(Long date, String userId) {
-    Instant setTime = parseUnixTimestamp(date);
+    Instant setTime = Instant.ofEpochSecond(date);
     Instant earliestPossibleWorkoutStart = setTime.minus(WORKOUT_DURATION);
 
     long start = earliestPossibleWorkoutStart.getEpochSecond();
@@ -38,14 +41,6 @@ public class LogWorkoutService {
         .map(logWorkoutMapper::toDto)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.noContent().build());
-  }
-
-  private Instant parseUnixTimestamp(Long value) {
-    long timestamp = value;
-    if (String.valueOf(Math.abs(timestamp)).length() <= 10) {
-      return Instant.ofEpochSecond(timestamp);
-    }
-    return Instant.ofEpochMilli(timestamp);
   }
 
   public LogWorkoutDTO findLatestLogForExercise(String exercise, String userId) {
@@ -138,11 +133,9 @@ public class LogWorkoutService {
     return ResponseEntity.ok(logWorkoutMapper.toDto(saved));
   }
 
-  private boolean belongsToSameWorkout(Long logStartTimestamp, Long setTimestamp) {
-    Instant logStart = parseUnixTimestamp(logStartTimestamp);
-    Instant setTime = parseUnixTimestamp(setTimestamp);
-
-    Instant workoutEnd = logStart.plus(WORKOUT_DURATION);
-    return !setTime.isBefore(logStart) && setTime.isBefore(workoutEnd);
+  private boolean belongsToSameWorkout(Long logDate, Long targetDate) {
+    LocalDate logLocalDate = Instant.ofEpochSecond(logDate).atZone(USER_ZONE).toLocalDate();
+    LocalDate targetLocalDate = Instant.ofEpochSecond(targetDate).atZone(USER_ZONE).toLocalDate();
+    return logLocalDate.equals(targetLocalDate);
   }
 }
